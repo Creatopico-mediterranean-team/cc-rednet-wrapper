@@ -1,0 +1,20 @@
+--biometric scanner
+--by TheAphix (afix)
+local tgb = peripheral.wrap('top')
+
+function waitForAnyPlayer()
+repeat
+local str = tgb.getLine(1)
+str = string.gsub(str, "%s+", "")
+sleep(0.2)
+until str ~= ''
+end
+
+function waitForPlayer(fname)
+repeat
+local sname = tgb.getLine(1)
+sname = string.gsub(sname, "%s+", "")
+sleep(0.2)
+until sname == fname
+end
+
