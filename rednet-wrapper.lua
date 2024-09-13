@@ -1,13 +1,10 @@
 local Wrapper = {}
+Wrapper.rednet = {}
+Wrapper.rpc_call = {}
 Wrapper.regs = {}
 Wrapper.regs.params = {}
 Wrapper.regs.functions = {}
 
-function Wrapper.regs:init(name, protocol)  
-  Wrapper.protocol = protocol
-  Wrapper.host = name
-  rednet.host(protocol, name)
-end
 
 function getArgs(fun)
   local args = {}
@@ -35,37 +32,42 @@ function getArgs(fun)
 end
 
 
-function Wrapper:host()
-  return Wrapper.regs
+function Wrapper:host(protocol, name)
+  Wrapper.rednet.protocol = protocol
+  Wrapper.rednet.name = name
+  return Wrapper.rpc_call
 end
 
 
-function Wrapper:client(name, protocol)
-
+function Wrapper:client(protocol, name)
+  Wrapper.rednet.protocol = protocol
+  Wrapper.rednet.name = name
+  rednet.host(protocol, name)
 end
 
 
-function check_param_length(def, inp)
-  return #def == #inp
+function call_reg_func(name, ...)
+  if #Wrapper.regs["params"][name] == select('#', ...) then
+    local message = {}
+    message.rpc = {}
+    message.rpc[name] = {}
+    for i, param_name in pairs(Wrapper.regs["params"][name]) do
+      message.rpc[name][param_name] = select(i,...)
+    end
+    rednet.broadcast(message, Wrapper.rednet.protocol)
+    print("call func name = "..name)
+    print(textutils.serialise(message))
+  end 
 end
 
 
 function Wrapper:register(name, func)
   Wrapper.regs.functions[name] = func
-  Wrapper.regs["params"][name] = {}
   Wrapper.regs["params"][name] = getArgs(func)
 
-  Wrapper.regs[name] = (
-    function (...)
-      if #Wrapper.regs["params"][name] == select('#', ...) then
-        local message = {}
-        message.wrapper_package = {}
-        message.wrapper_package[name] = {}
-        for i, param_name in pairs(Wrapper.regs["params"][name]) do
-          message.wrapper_package[name][param_name] = select(i,...)
-        end
-        rednet.broadcast(message, Wrapper.protocol)
-      end 
+  Wrapper.rpc_call[name] = (
+    function (...) 
+      call_reg_func(name, ...)
     end
   )
   print("New wrapper registered="..name)
