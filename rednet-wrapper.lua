@@ -1,7 +1,13 @@
 local Wrapper = {}
 Wrapper.regs = {}
 Wrapper.regs.params = {}
+Wrapper.regs.functions = {}
 
+function Wrapper.regs:init(name, protocol)  
+  Wrapper.protocol = protocol
+  Wrapper.host = name
+  rednet.host(protocol, name)
+end
 
 function getArgs(fun)
   local args = {}
@@ -34,17 +40,35 @@ function Wrapper:host()
 end
 
 
-function Wrapper:client()
+function Wrapper:client(name, protocol)
 
 end
 
 
+function check_param_length(def, inp)
+  return #def == #inp
+end
+
+
 function Wrapper:register(name, func)
-  print("name="..name)
-  print(textutils.serialise(getArgs(func)))
-  Wrapper.regs[name] = func
+  Wrapper.regs.functions[name] = func
   Wrapper.regs["params"][name] = {}
   Wrapper.regs["params"][name] = getArgs(func)
+
+  Wrapper.regs[name] = (
+    function (...)
+      if #Wrapper.regs["params"][name] == select('#', ...) then
+        local message = {}
+        message.wrapper_package = {}
+        message.wrapper_package[name] = {}
+        for i, param_name in pairs(Wrapper.regs["params"][name]) do
+          message.wrapper_package[name][param_name] = select(i,...)
+        end
+        rednet.broadcast(message, Wrapper.protocol)
+      end 
+    end
+  )
+  print("New wrapper registered="..name)
 end
 
 

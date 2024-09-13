@@ -6,7 +6,7 @@ function coords_func(x, y, z)
 end
 
 rednet_wrapper:register("coords", coords_func)
-
+rednet_wrapper:host():init("mediterranean-team-test", "server")
 
 local message = {}
 message.coords = {}
