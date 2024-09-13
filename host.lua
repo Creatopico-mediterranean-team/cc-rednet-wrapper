@@ -1,6 +1,12 @@
-local protocol = "mediterranean-team-test"
-local host_name = "ligr_host"
-local host = rednet.host(protocol, host_name)
+local rednet_wrapper = require('rednet-wrapper')
+
+
+function coords_func(x, y, z)
+    print("My coords is: "..x..", "..y..", "..z..";")
+end
+
+rednet_wrapper:register("coords", coords_func)
+
 
 local message = {}
 message.coords = {}
@@ -9,7 +15,6 @@ message.coords.y = 200
 message.coords.z = 300
 
 repeat
-    print(textutils.serialise(message))
-    rednet.broadcast(coords, protocol)
+    rednet_wrapper:host().coords(1, 2, 3)
     sleep(1)
 until false
