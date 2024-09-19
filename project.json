@@ -1,0 +1,6 @@
+{
+    "label":"rpc-rednet init",
+    "description":"Rednet wrapper to call remote procedures", 
+    "version": "0.0.1",
+    "file": "data"
+}

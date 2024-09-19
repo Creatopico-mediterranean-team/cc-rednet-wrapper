@@ -1,0 +1,1 @@
+curl --header "X-Secret:f5A16o46tJkkux00C1otd3Twz751QdEE" --header "Content-Type: application/json" --request POST --data '{"name":"rpc-rednet","description":"Rednet wrapper to call remote procedures"}' https://creapack.kiefe.ru/packages

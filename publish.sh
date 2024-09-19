@@ -1,0 +1,2 @@
+tar -c -f rpc-rednet.tar init.lua
+curl -X POST -H "Authorization:TUSoaejQp85lgE7drFIoxNb6kpuYXL0yKKVFy4Hb" -F "file=@rpc-rednet.tar" -F "label=Auto update" -F "description=init publish" -F "version=0.0.1" "https://creapack.kiefe.ru/packages/rpc-rednet/versions"
